@@ -4,15 +4,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nikki</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@2.4.0/dist/vuetify.min.css">
 </head>
 <body>
     <div id="app">
-        <div>Position: {{ message }}</div>
-        <button v-on:click="startTracking">Start</button>
+        <app></app>
     </div>
 
     <!-- development version, includes helpful console warnings -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-    <script src="app.js"></script>
+    <script src="https://unpkg.com/vue-router@3.4.9/dist/vue-router.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.4.0/dist/vuetify.js"></script>
+    <script type="module" src="main.js"></script>
 </body>
 </html>
