@@ -41,6 +41,17 @@
         .countdown span {
             font-size: 7rem;
         }
+
+        #pauseStopBtn {
+            display: inline-block;
+            text-align: center;
+            position: absolute;
+            left: 0;
+            bottom: 7rem;
+            width: 100%;
+            background: red;
+            padding: 1rem;
+        }
     </style>
 </head>
 
@@ -50,6 +61,17 @@
     <script src="https://cdn.jsdelivr.net/npm/reefjs@7.6.2/dist/reef.min.js"></script>
     <script>
         Reef.debug(true)
+
+        var store = new Reef.Store({
+            data: {
+                startTime: null,
+                distance: 0.0,
+                duration: '00:00:00',
+                pace: 0,
+                hr: 0,
+                pauseStopBtn: 'Stop'
+            }
+        })
 
         var app = new Reef('#app', {
             template: function (props) {
@@ -69,17 +91,77 @@
         })
 
         var sessionStats = new Reef('#sessionStats', {
-            data: {
-                text: 'Stats!'
-            },
+            store: store,
             template: function (props) {
-                return `${props.text}`
+                return `
+                    <div id="duration">Duration: ${props.duration}</div>
+                    <div id="distance">Distance: ${props.distance} KM</div>
+                    <div id="pace">Pace: ${props.pace} Min/KM</div>
+                    <div id="hr">Heart Rate: ${props.hr} S/Min</div>
+                    <div id="pauseStopBtn" onclick="stopSession()">${props.pauseStopBtn}</div>
+                `
             }
         })
 
         // Render the component
         app.render();
 
+        // Functions
+        let updateDuration, getPosition
+
+        function getDuration() {
+            const curTime = new Date()
+            const diff = (curTime - store.data.startTime) / 1000
+
+            const seconds = Math.floor(diff % 60)
+            const minutes = Math.floor(diff / 60) % 60
+            const hours = Math.floor(diff / 3600)
+
+            return `${hours.toString().padStart(2, 0)}:${minutes.toString().padStart(2, 0)}:${seconds.toString().padStart(2, 0)}`
+        }
+
+        function posSuccess(position) {
+            const latitude = position.coords.latitude
+            const longitude = position.coords.longitude
+            const timestamp = position.timestamp
+
+            const waypoint = {
+                "latitude": latitude,
+                "longitude": longitude,
+                "timestamp": timestamp
+            }
+
+            store.data.waypoints.push(waypoint)
+        }
+
+        function posError() {
+            console.log('Unable to retrieve your location')
+        }
+
+        function stopSession() {
+            store.data.endTime = new Date()
+
+            clearInterval(updateDuration)
+            clearInterval(getPosition)
+            console.log('end session')
+        }
+
+        function startSession() {
+            store.data.startTime = new Date()
+            store.data.waypoints = []
+
+            updateDuration = setInterval(() => {
+                store.data.duration = getDuration()
+            }, 1000)
+
+            getPosition = setInterval(() => {
+                navigator.geolocation.getCurrentPosition(posSuccess, posError)
+            }, 5000)
+        }
+
+
+
+        // Event listeners
         var btnBoxEl = document.getElementById('btnBox')
         var counter = document.getElementById('counter')
 
@@ -109,6 +191,7 @@
                         clearInterval(countdown)
                         btnBox.data.showCounter = false
                         btnBox.attach(sessionStats)
+                        startSession()
                     }
                 }, 1000)
             }
