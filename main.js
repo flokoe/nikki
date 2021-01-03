@@ -38,7 +38,7 @@ var router = new Reef.Router({
 
 var app = new Reef('#app', {
   template: function (props) {
-    // return `<div id="btnBox"></div>`
+    console.log('render app')
     return `<main id="main"></main>
         <div id="bottom-nav"></div>`
   }
@@ -47,6 +47,8 @@ var app = new Reef('#app', {
 var main = new Reef('#main', {
   router: router,
   template: function (props, route) {
+    console('render main')
+    console.log(route)
     return `<div id="${route.id}"></div>`
   },
   attachTo: app
@@ -90,6 +92,7 @@ var btnBox = new Reef('#btnBox', {
     showCounter: true
   },
   template: function (props) {
+    console.log('btnBox')
     return `${props.showCounter ? '<span id="counter">' + props.counterContent + '</span>' : '<div id="sessionStats"></div>'}`
   },
   attachTo: activity
@@ -98,6 +101,7 @@ var btnBox = new Reef('#btnBox', {
 var sessionStats = new Reef('#sessionStats', {
   store: store,
   template: function (props) {
+    console.log('sessionsStats')
     return `
       <div id="duration">Duration: ${props.duration}</div>
       <div id="distance">Distance: ${props.distance} KM</div>
@@ -191,6 +195,16 @@ function stopSession() {
   clearInterval(updateDuration)
   clearInterval(getPosition)
   console.log('end session')
+
+  const request = indexedDB.open('NikkiDB', 3)
+  request.onerror = function(event) {
+    console.log('error')
+    console.log(event)
+  };
+  request.onsuccess = function(event) {
+    console.log('success')
+    console.log(event)
+  };
 }
 
 function startSession() {
