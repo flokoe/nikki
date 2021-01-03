@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buttton test</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap-reboot.min.css">
+    <style>
+        html, body {
+            height: 100%;
+        }
+        #app {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        #btnBox {
+            background: blue;
+            width: 8em;
+            height: 8em;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: width .3s, height .3s, border-radius .5s, background .2s;
+            transition-timing-function: ease-in;
+            color: #fff;
+        }
+
+        /* #counter {
+            transition: opacity .4s;
+            transition-timing-function: ease-in;
+        } */
+
+        .countdown span {
+            font-size: 7rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reefjs@7.6.2/dist/reef.min.js"></script>
+    <script>
+        // Setup the component
+        var app = new Reef('#app', {
+            template: function (props) {
+                return `<div id="btnBox"></div>`;
+            }
+        });
+
+        var btnBox = new Reef('#btnBox', {
+            data: {
+                counterContent: 'Start'
+            },
+            template: function(props) {
+                return `<span id="counter">${props.counterContent}</span>`
+            },
+            attachTo: app
+        })
+
+        // Render the component
+        app.render();
+
+        var btnBoxEl = document.getElementById('btnBox')
+        var counter = document.getElementById('counter')
+
+        btnBoxEl.addEventListener('click', function () {
+            btnBoxEl.style.position = 'fixed'
+            btnBoxEl.style.borderRadius = 0
+            btnBoxEl.style.width = '100%'
+            btnBoxEl.style.height = '100%'
+            btnBoxEl.style.background = 'black'
+            // counter.style.opacity = 0
+        })
+
+        btnBoxEl.addEventListener("transitionend", function(e) {
+            if (e.propertyName == 'border-bottom-left-radius') {
+                let count = 10
+                btnBox.data.counterContent = count
+                btnBoxEl.classList.add('countdown')
+                count--
+
+                const countdown = setInterval(() => {
+                    console.log('interval')
+                    if (count != 0) {
+                        btnBox.data.counterContent = count--
+                    } else {
+                        btnBox.data.counterContent = 'GO!'
+                        clearInterval(countdown)
+                    }
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+
+</html>
