@@ -38,7 +38,6 @@ var router = new Reef.Router({
 
 var app = new Reef('#app', {
   template: function (props) {
-    console.log('render app')
     return `<main id="main"></main>
         <div id="bottom-nav"></div>`
   }
@@ -47,8 +46,6 @@ var app = new Reef('#app', {
 var main = new Reef('#main', {
   router: router,
   template: function (props, route) {
-    console('render main')
-    console.log(route)
     return `<div id="${route.id}"></div>`
   },
   attachTo: app
@@ -89,11 +86,16 @@ var sessions = new Reef('#sessions', {
 var btnBox = new Reef('#btnBox', {
   data: {
     counterContent: 'Start',
-    showCounter: true
+    view: 'counter'
   },
   template: function (props) {
-    console.log('btnBox')
-    return `${props.showCounter ? '<span id="counter">' + props.counterContent + '</span>' : '<div id="sessionStats"></div>'}`
+    if (props.view == 'counter') {
+      return `<span id="counter">${props.counterContent}</span>`
+    } else {
+      return `<div id="${props.view}"></div>`
+    }
+
+    // return `${props.showCounter ? '<span id="counter">' + props.counterContent + '</span>' : '<div id="sessionStats"></div>'}`
   },
   attachTo: activity
 })
@@ -101,7 +103,6 @@ var btnBox = new Reef('#btnBox', {
 var sessionStats = new Reef('#sessionStats', {
   store: store,
   template: function (props) {
-    console.log('sessionsStats')
     return `
       <div id="duration">Duration: ${props.duration}</div>
       <div id="distance">Distance: ${props.distance} KM</div>
@@ -109,6 +110,11 @@ var sessionStats = new Reef('#sessionStats', {
       <div id="hr">Heart Rate: ${props.hr} S/Min</div>
       <div id="pauseStopBtn" onclick="stopSession()">${props.pauseStopBtn}</div>
         `
+  }
+})
+var finalScreen = new Reef('#finalScreen', {
+  template: function (props) {
+    return `yeah`
   }
 })
 
@@ -192,19 +198,22 @@ function posError() {
 function stopSession() {
   store.data.endTime = new Date()
 
-  clearInterval(updateDuration)
   clearInterval(getPosition)
-  console.log('end session')
+  clearInterval(updateDuration)
 
-  const request = indexedDB.open('NikkiDB', 3)
-  request.onerror = function(event) {
-    console.log('error')
-    console.log(event)
-  };
-  request.onsuccess = function(event) {
-    console.log('success')
-    console.log(event)
-  };
+  btnBox.detach(sessionStats)
+  btnBox.data.view = 'finalScreen'
+  btnBox.attach(finalScreen)
+
+  // const request = indexedDB.open('NikkiDB', 3)
+  // request.onerror = function(event) {
+  //   console.log('error')
+  //   console.log(event)
+  // };
+  // request.onsuccess = function(event) {
+  //   console.log('success')
+  //   console.log(event)
+  // };
 }
 
 function startSession() {
@@ -244,7 +253,7 @@ btnBoxEl.addEventListener("transitionend", function (e) {
         count--
       } else {
         clearInterval(countdown)
-        btnBox.data.showCounter = false
+        btnBox.data.view = 'sessionStats'
         btnBox.attach(sessionStats)
         startSession()
       }
