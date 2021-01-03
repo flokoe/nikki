@@ -149,9 +149,13 @@ window.addEventListener('routeUpdated', function (e) {
   main.render()
 })
 
-// Functions
-let updateDuration, getPosition
+// Variables
+var btnBoxEl = document.getElementById('btnBox')
+var counter = document.getElementById('counter')
 
+let updateDuration, getPosition, count
+
+// Functions
 function getDuration() {
   const curTime = new Date()
   const diff = (curTime - store.data.startTime) / 1000
@@ -202,24 +206,18 @@ function startSession() {
   }, 5000)
 }
 
-
-
 // Event listeners
-var btnBoxEl = document.getElementById('btnBox')
-var counter = document.getElementById('counter')
+counter.addEventListener('click', function () {
+  btnBoxEl.classList.add('statsExpand')
 
-btnBoxEl.addEventListener('click', function () {
-  btnBoxEl.style.position = 'fixed'
-  btnBoxEl.style.borderRadius = 0
-  btnBoxEl.style.width = '100%'
-  btnBoxEl.style.height = '100%'
-  btnBoxEl.style.background = 'black'
-  // counter.style.opacity = 0
+  if (btnBox.data.counterContent != 'Start') {
+    count = 0
+  }
 })
 
 btnBoxEl.addEventListener("transitionend", function (e) {
   if (e.propertyName == 'border-bottom-left-radius') {
-    let count = 10
+    count = 10
     btnBox.data.counterContent = count
     btnBoxEl.classList.add('countdown')
     count--

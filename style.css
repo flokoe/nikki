@@ -55,6 +55,15 @@ body {
     z-index: 999;
 }
 
+.statsExpand {
+  position: fixed;
+  border-radius: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: black !important;
+  /* opacity: 0; */
+}
+
 /* #counter {
     transition: opacity .4s;
     transition-timing-function: ease-in;
