@@ -1,119 +1,241 @@
+Reef.debug(true)
+
+var store = new Reef.Store({
+  data: {
+    startTime: null,
+    distance: 0.0,
+    duration: '00:00:00',
+    pace: 0,
+    hr: 0,
+    pauseStopBtn: 'Stop'
+  }
+})
+
 var router = new Reef.Router({
-	routes: [
-		{
-			id: 'activity',
-			title: 'Activity',
+  routes: [
+    {
+      id: 'activity',
+      title: 'Activity',
       url: '/',
-      component: activity
-		},
-		{
-			id: 'statistics',
-			title: 'Statistics',
-      url: '/statistics',
-      component: statistics
-		},
-		{
-			id: 'sessions',
-			title: 'Sessions',
-      url: '/sessions',
-      component: sessions
     },
     {
-			id: 'settings',
-			title: 'Settings',
-			url: '/settings'
-		}
-	]
+      id: 'statistics',
+      title: 'Statistics',
+      url: '/statistics',
+    },
+    {
+      id: 'sessions',
+      title: 'Sessions',
+      url: '/sessions',
+    },
+    {
+      id: 'settings',
+      title: 'Settings',
+      url: '/settings'
+    }
+  ]
 })
 
 var app = new Reef('#app', {
-	template: function () {
-      return `<main id="main"></main>
+  template: function (props) {
+    // return `<div id="btnBox"></div>`
+    return `<main id="main"></main>
         <div id="bottom-nav"></div>`
-	}
+  }
 })
 
 var main = new Reef('#main', {
   router: router,
-  template: function(props, route) {
-    return `<div id="activity"></div>`
+  template: function (props, route) {
+    return `<div id="${route.id}"></div>`
   },
   attachTo: app
 })
 
 var bottom_nav = new Reef('#bottom-nav', {
-  template: function() {
+  template: function () {
     return `
-      <ul>
-        <li><a href="/statistics">Statistics</a></li>
-        <li><a href="/">Activity</a></li>
-        <li><a href="/sessions">Sessions</a></li>
-      </ul>
-    `
+        <ul>
+          <li><a href="/statistics">Statistics</a></li>
+          <li><a href="/">Activity</a></li>
+          <li><a href="/sessions">Sessions</a></li>
+        </ul>
+      `
   },
   attachTo: app
 })
 
 var activity = new Reef('#activity', {
-  data: {
-    results: ''
+  template: function () {
+    return `<div id="btnBox"></div>`
   },
-  template: function(props) {
-    return `
-      <div id="settings-icon"><a href="/settings">Settings</a></div>
-      <button id="startBtn"></button>
-      <div id="results">${props.results}</div>
-    `
-  },
-  allowHTML: true,
   attachTo: main
 })
 
 var statistics = new Reef('#statistics', {
-  template: function() {
+  template: function () {
     return `statistics!`
-  },
+  }
 })
 
 var sessions = new Reef('#sessions', {
-  template: function() {
+  template: function () {
     return `sessions!`
-  },
+  }
 })
 
-var startBtnComp = new Reef('#startBtn', {
+var btnBox = new Reef('#btnBox', {
   data: {
-    btnContent: 'Start<br>Session'
+    counterContent: 'Start',
+    showCounter: true
   },
-  template: function(props) {
-    return props.btnContent
+  template: function (props) {
+    return `${props.showCounter ? '<span id="counter">' + props.counterContent + '</span>' : '<div id="sessionStats"></div>'}`
   },
-  allowHTML: true,
   attachTo: activity
 })
 
-Reef.debug(true)
+var sessionStats = new Reef('#sessionStats', {
+  store: store,
+  template: function (props) {
+    return `
+      <div id="duration">Duration: ${props.duration}</div>
+      <div id="distance">Distance: ${props.distance} KM</div>
+      <div id="pace">Pace: ${props.pace} Min/KM</div>
+      <div id="hr">Heart Rate: ${props.hr} S/Min</div>
+      <div id="pauseStopBtn" onclick="stopSession()">${props.pauseStopBtn}</div>
+        `
+  }
+})
+
+// Render the component
 app.render()
 
-const startBtn = document.getElementById('startBtn')
+window.addEventListener('beforeRouteUpdated', function (e) {
+  switch (e.detail.current.id) {
+    case 'activity':
+      main.detach(activity)
+      break
+    case 'statistics':
+      main.detach(statistics)
+      break
+    case 'sessions':
+      main.detach(sessions)
+      break
 
-function success(position) {
-  const latitude  = position.coords.latitude;
-  const longitude = position.coords.longitude;
-  const date = new Date()
+    default:
+      console.log('No route found.')
+      break
+  }
+})
 
-  activity.data.results += `Latitude: ${latitude}, Longitude: ${longitude}; ${date}<br>-----<br>`;
+window.addEventListener('routeUpdated', function (e) {
+  switch (e.detail.current.id) {
+    case 'activity':
+      main.attach(activity)
+      break
+    case 'statistics':
+      main.attach(statistics)
+      break
+    case 'sessions':
+      main.attach(sessions)
+      break
+
+    default:
+      console.log('No route found.')
+      break
+  }
+
+  main.render()
+})
+
+// Functions
+let updateDuration, getPosition
+
+function getDuration() {
+  const curTime = new Date()
+  const diff = (curTime - store.data.startTime) / 1000
+
+  const seconds = Math.floor(diff % 60)
+  const minutes = Math.floor(diff / 60) % 60
+  const hours = Math.floor(diff / 3600)
+
+  return `${hours.toString().padStart(2, 0)}:${minutes.toString().padStart(2, 0)}:${seconds.toString().padStart(2, 0)}`
 }
 
-function error() {
-  activity.data.results = 'Unable to retrieve your location';
+function posSuccess(position) {
+  const latitude = position.coords.latitude
+  const longitude = position.coords.longitude
+  const timestamp = position.timestamp
+
+  const waypoint = {
+    "latitude": latitude,
+    "longitude": longitude,
+    "timestamp": timestamp
+  }
+
+  store.data.waypoints.push(waypoint)
 }
 
-startBtn.addEventListener('click', () => {
-  if(!navigator.geolocation) {
-    activity.data.results = 'Geolocation is not supported by your browser';
-  } else {
-    activity.data.results = 'Locating…';
-    navigator.geolocation.watchPosition(success, error);
+function posError() {
+  console.log('Unable to retrieve your location')
+}
+
+function stopSession() {
+  store.data.endTime = new Date()
+
+  clearInterval(updateDuration)
+  clearInterval(getPosition)
+  console.log('end session')
+}
+
+function startSession() {
+  store.data.startTime = new Date()
+  store.data.waypoints = []
+
+  updateDuration = setInterval(() => {
+    store.data.duration = getDuration()
+  }, 1000)
+
+  getPosition = setInterval(() => {
+    navigator.geolocation.getCurrentPosition(posSuccess, posError)
+  }, 5000)
+}
+
+
+
+// Event listeners
+var btnBoxEl = document.getElementById('btnBox')
+var counter = document.getElementById('counter')
+
+btnBoxEl.addEventListener('click', function () {
+  btnBoxEl.style.position = 'fixed'
+  btnBoxEl.style.borderRadius = 0
+  btnBoxEl.style.width = '100%'
+  btnBoxEl.style.height = '100%'
+  btnBoxEl.style.background = 'black'
+  // counter.style.opacity = 0
+})
+
+btnBoxEl.addEventListener("transitionend", function (e) {
+  if (e.propertyName == 'border-bottom-left-radius') {
+    let count = 10
+    btnBox.data.counterContent = count
+    btnBoxEl.classList.add('countdown')
+    count--
+
+    const countdown = setInterval(() => {
+      if (count > 0) {
+        btnBox.data.counterContent = count--
+      } else if (count == 0) {
+        btnBox.data.counterContent = 'GO!'
+        count--
+      } else {
+        clearInterval(countdown)
+        btnBox.data.showCounter = false
+        btnBox.attach(sessionStats)
+        startSession()
+      }
+    }, 1000)
   }
 })
