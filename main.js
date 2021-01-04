@@ -119,10 +119,22 @@ var sessionStats = new Reef('#sessionStats', {
   store: store,
   template: function (props) {
     return `
-      <div id="duration">Duration: ${props.duration}</div>
-      <div id="distance">Distance: ${props.distance} KM</div>
-      <div id="pace">Pace: ${props.pace} Min/KM</div>
-      <div id="hr">Heart Rate: ${props.hr} S/Min</div>
+      <div id="duration">
+        <div class="statVal">${props.duration}</div>
+        <div class="statLabel">Duration</div>
+      </div>
+      <div id="distance">
+        <div class="statVal">${props.distance}</div>
+        <div class="statLabel">Distance (km)</div>
+      </div>
+      <div id="pace">
+        <div class="statVal">${props.pace}</div>
+        <div class="statLabel">⌀ Pace (min/km)</div>
+      </div>
+      <div id="hr">
+        <div class="statVal">${props.hr}</div>
+        <div class="statLabel">HR</div>
+      </div>
       <div id="pauseStopBtn" onclick="stopSession()">${props.pauseStopBtn}</div>
         `
   }

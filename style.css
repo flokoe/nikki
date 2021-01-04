@@ -64,6 +64,28 @@ body {
   height: 100% !important;
   background: black !important;
   /* opacity: 0; */
+  /* justify-content: flex-start !important;
+  align-items: flex-start !important; */
+}
+
+#sessionStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 4rem;
+  grid-row-gap: 2rem;
+}
+
+#sessionStats div {
+  display: flex;
+  flex-direction: column;
+}
+
+.statVal {
+  font-size: 1.7rem;
+}
+
+.statLabel {
+  margin-top: -.5rem;
 }
 
 /* #counter {
