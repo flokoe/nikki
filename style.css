@@ -36,10 +36,12 @@ body {
   height: 100%;
 }
 
-/*
 #settings-icon {
-  align-self: flex-end;
-}*/
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 1rem;
+}
 
 #btnBox {
     background: blue;
