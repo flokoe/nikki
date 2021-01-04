@@ -90,7 +90,7 @@ var btnBox = new Reef('#btnBox', {
   },
   template: function (props) {
     if (props.view == 'counter') {
-      return `<span id="counter">${props.counterContent}</span>`
+      return `<span id="counter" onclick="expandBtnBox()">${props.counterContent}</span>`
     } else {
       return `<div id="${props.view}"></div>`
     }
@@ -114,7 +114,10 @@ var sessionStats = new Reef('#sessionStats', {
 })
 var finalScreen = new Reef('#finalScreen', {
   template: function (props) {
-    return `yeah`
+    return `
+      <p>Yeaaah</p>
+      <button id="submitSession" onclick="submitSession()">Close</button>
+    `
   }
 })
 
@@ -164,6 +167,7 @@ var btnBoxEl = document.getElementById('btnBox')
 var counter = document.getElementById('counter')
 
 let updateDuration, getPosition, count
+let startTransition = true
 
 // Functions
 function getDuration() {
@@ -195,6 +199,14 @@ function posError() {
   console.log('Unable to retrieve your location')
 }
 
+function submitSession() {
+  btnBox.detach(finalScreen)
+  btnBoxEl.classList.remove('countdown')
+  btnBox.data.view = 'counter'
+  btnBox.data.counterContent = 'Start'
+  btnBoxEl.classList.remove('statsExpand')
+}
+
 function stopSession() {
   store.data.endTime = new Date()
 
@@ -218,6 +230,7 @@ function stopSession() {
 
 function startSession() {
   store.data.startTime = new Date()
+  store.data.duration = '00:00:00'
   store.data.waypoints = []
 
   updateDuration = setInterval(() => {
@@ -230,16 +243,17 @@ function startSession() {
 }
 
 // Event listeners
-counter.addEventListener('click', function () {
+function expandBtnBox() {
   btnBoxEl.classList.add('statsExpand')
 
   if (btnBox.data.counterContent != 'Start') {
     count = 0
   }
-})
+}
 
 btnBoxEl.addEventListener("transitionend", function (e) {
-  if (e.propertyName == 'border-bottom-left-radius') {
+  if (e.propertyName == 'border-bottom-left-radius' && startTransition) {
+    startTransition = false
     count = 10
     btnBox.data.counterContent = count
     btnBoxEl.classList.add('countdown')
@@ -258,5 +272,7 @@ btnBoxEl.addEventListener("transitionend", function (e) {
         startSession()
       }
     }, 1000)
+  } else if (e.propertyName == 'border-bottom-left-radius' && !startTransition) {
+    startTransition = true
   }
 })
