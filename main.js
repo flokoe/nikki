@@ -225,7 +225,6 @@ function posSuccess(position) {
   const latitude = position.coords.latitude
   const longitude = position.coords.longitude
   const timestamp = position.timestamp
-  const lastWaypoint = store.data.waypoints[-1]
 
   const waypoint = {
     "latitude": latitude,
@@ -234,6 +233,7 @@ function posSuccess(position) {
   }
 
   if (store.data.waypoints.length != 0) {
+    const lastWaypoint = store.data.waypoints[store.data.waypoints.length - 1]
     store.data.distance = getDistance(lastWaypoint, waypoint)
   }
 
