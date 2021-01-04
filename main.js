@@ -218,7 +218,8 @@ function getDuration() {
 function getDistance(firstWP, secondWP) {
   store.data.distanceInMeter += window.geolib.getDistance(firstWP, secondWP)
 
-  return window.geolib.convertDistance(store.data.distanceInMeter, 'km')
+  return store.data.distanceInMeter
+  // return window.geolib.convertDistance(store.data.distanceInMeter, 'km')
 }
 
 function posSuccess(position) {
@@ -280,6 +281,8 @@ function startSession() {
   store.data.startTime = new Date()
   store.data.duration = '00:00:00'
   store.data.waypoints = []
+  store.data.distance = 0.0
+  store.data.distanceInMeter = 0
 
   updateDuration = setInterval(() => {
     store.data.duration = getDuration()
