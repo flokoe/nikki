@@ -1,3 +1,9 @@
+const db = new Dexie('NikkiDB')
+db.version(1).stores({
+  tracks: '&timestamp',
+  sessions: '&startTime'
+})
+
 Reef.debug(true)
 
 var store = new Reef.Store({
@@ -200,6 +206,19 @@ function posError() {
 }
 
 function submitSession() {
+  const track = {
+    timestamp: Reef.clone(store.data.startTime.getTime()),
+    waypoints: Reef.clone(store.data.waypoints)
+  }
+
+  const session = {
+    startTime: Reef.clone(store.data.startTime.getTime()),
+    endTime: Reef.clone(store.data.endTime.getTime())
+  }
+
+  db.tracks.add(track)
+  db.sessions.add(session)
+
   btnBox.detach(finalScreen)
   btnBoxEl.classList.remove('countdown')
   btnBox.data.view = 'counter'
@@ -216,16 +235,6 @@ function stopSession() {
   btnBox.detach(sessionStats)
   btnBox.data.view = 'finalScreen'
   btnBox.attach(finalScreen)
-
-  // const request = indexedDB.open('NikkiDB', 3)
-  // request.onerror = function(event) {
-  //   console.log('error')
-  //   console.log(event)
-  // };
-  // request.onsuccess = function(event) {
-  //   console.log('success')
-  //   console.log(event)
-  // };
 }
 
 function startSession() {
