@@ -9,6 +9,7 @@ Reef.debug(true)
 var store = new Reef.Store({
   data: {
     startTime: null,
+    distanceInMeter: 0,
     distance: 0.0,
     duration: '00:00:00',
     pace: 0,
@@ -214,15 +215,26 @@ function getDuration() {
   return `${hours.toString().padStart(2, 0)}:${minutes.toString().padStart(2, 0)}:${seconds.toString().padStart(2, 0)}`
 }
 
+function getDistance(firstWP, secondWP) {
+  store.data.distanceInMeter += window.geolib.getDistance(firstWP, secondWP)
+
+  return window.geolib.convertDistance(store.data.distanceInMeter, 'km')
+}
+
 function posSuccess(position) {
   const latitude = position.coords.latitude
   const longitude = position.coords.longitude
   const timestamp = position.timestamp
+  const lastWaypoint = store.data.waypoints[-1]
 
   const waypoint = {
     "latitude": latitude,
     "longitude": longitude,
     "timestamp": timestamp
+  }
+
+  if (store.data.waypoints.length != 0) {
+    store.data.distance = getDistance(lastWaypoint, waypoint)
   }
 
   store.data.waypoints.push(waypoint)
@@ -273,6 +285,7 @@ function startSession() {
     store.data.duration = getDuration()
   }, 1000)
 
+  navigator.geolocation.getCurrentPosition(posSuccess, posError)
   getPosition = setInterval(() => {
     navigator.geolocation.getCurrentPosition(posSuccess, posError)
   }, 5000)
