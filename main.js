@@ -160,7 +160,7 @@ var finalScreen = new Reef('#finalScreen', {
   template: function (props) {
     return `
       <p>Yeaaah</p>
-      <button id="submitSession" onclick="submitSession()">Close</button>
+      <button id="submitSession" onclick="submitSession(this)">Close</button>
     `
   }
 })
@@ -216,7 +216,6 @@ window.addEventListener('routeUpdated', function (e) {
 })
 
 // Variables
-var btnBoxEl = document.getElementById('btnBox')
 var counter = document.getElementById('counter')
 
 let updateDuration, getPosition, count
@@ -264,7 +263,7 @@ function posError() {
   console.log('Unable to retrieve your location')
 }
 
-function submitSession() {
+function submitSession(elem) {
   const track = {
     timestamp: Reef.clone(store.data.startTime.getTime()),
     waypoints: Reef.clone(store.data.waypoints)
@@ -279,10 +278,10 @@ function submitSession() {
   db.sessionsTable.add(cur_session)
 
   btnBox.detach(finalScreen)
-  btnBoxEl.classList.remove('countdown')
+  elem.parentElement.parentElement.classList.remove('countdown')
   btnBox.data.view = 'counter'
   btnBox.data.counterContent = 'Start'
-  btnBoxEl.classList.remove('statsExpand')
+  elem.parentElement.parentElement.classList.remove('statsExpand')
 }
 
 function stopSession() {
@@ -322,12 +321,12 @@ function expandBtnBox(elem) {
   }
 }
 
-btnBoxEl.addEventListener("transitionend", function (e) {
-  if (e.propertyName == 'border-bottom-left-radius' && startTransition) {
+window.addEventListener("transitionend", function (e) {
+  if (e.propertyName == 'border-bottom-left-radius' && e.target.id == 'btnBox' && startTransition) {
     startTransition = false
     count = 10
     btnBox.data.counterContent = count
-    btnBoxEl.classList.add('countdown')
+    e.target.classList.add('countdown')
     count--
 
     const countdown = setInterval(() => {
