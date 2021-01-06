@@ -92,12 +92,11 @@ var sessions = new Reef('#sessions', {
     sessionArray: null
   },
   template: function (props) {
-    console.log('in session template')
     const divs = props.sessionArray.map((single_session) => {
       return `
       <div class="sessionCard">
         <div>
-          <div class="sessionDistance">${single_session.distance}</div>
+          <div class="sessionDistance">${single_session.distance} km</div>
           <div class="sessionDuration">${single_session.duration}</div>
         </div>
         <div class="sessionDate">${new Date(single_session.startTime).toLocaleDateString()}</div>
@@ -142,7 +141,7 @@ var sessionStats = new Reef('#sessionStats', {
       </div>
       <div id="distance">
         <div class="statVal">${props.distance}</div>
-        <div class="statLabel">Distance (km)</div>
+        <div class="statLabel">Distance (m)</div>
       </div>
       <div id="pace">
         <div class="statVal">${props.pace}</div>
@@ -233,6 +232,15 @@ function getDuration() {
   return `${hours.toString().padStart(2, 0)}:${minutes.toString().padStart(2, 0)}:${seconds.toString().padStart(2, 0)}`
 }
 
+function getDuration2(start, end) {
+  const diff = (end - start) / 1000
+  const seconds = Math.floor(diff % 60)
+  const minutes = Math.floor(diff / 60) % 60
+  const hours = Math.floor(diff / 3600)
+
+  return `${hours.toString().padStart(2, 0)}:${minutes.toString().padStart(2, 0)}:${seconds.toString().padStart(2, 0)}`
+}
+
 function getDistance(firstWP, secondWP) {
   store.data.distanceInMeter += window.geolib.getDistance(firstWP, secondWP)
 
@@ -264,14 +272,20 @@ function posError() {
 }
 
 function submitSession(elem) {
+  const startTimestamp = Reef.clone(store.data.startTime.getTime())
+  const endTimestamp = Reef.clone(store.data.endTime.getTime())
+
   const track = {
-    timestamp: Reef.clone(store.data.startTime.getTime()),
+    timestamp: startTimestamp,
     waypoints: Reef.clone(store.data.waypoints)
   }
 
   const cur_session = {
-    startTime: Reef.clone(store.data.startTime.getTime()),
-    endTime: Reef.clone(store.data.endTime.getTime())
+    startTime: startTimestamp,
+    endTime: endTimestamp,
+    duration: getDuration2(startTimestamp, endTimestamp),
+    distanceInMeter: Reef.clone(store.data.distanceInMeter),
+    distance: window.geolib.convertDistance(store.data.distanceInMeter, 'km').toFixed(2)
   }
 
   db.tracks.add(track)
