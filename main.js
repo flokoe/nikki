@@ -198,7 +198,7 @@ window.addEventListener('routeUpdated', function (e) {
       main.attach(statistics)
       break
     case 'sessions':
-      db.sessionsTable.toArray().then((array) => {
+      db.sessionsTable.reverse().toArray().then((array) => {
         sessions.data.sessionArray = array
         main.attach(sessions)
       })
