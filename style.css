@@ -35,6 +35,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100%;
+  flex-direction: column;
 }
 
 #settings-icon {
@@ -44,6 +45,19 @@ body {
     display: flex;
     width: 100%;
     justify-content: space-between;
+}
+
+#conn {
+  display: flex;
+  position: relative;
+  top: -7rem;
+}
+
+#conn div {
+  border-radius: 50%;
+  padding: .5rem;
+  margin: 0 .7rem;
+  background: lightgray;
 }
 
 #btnBox {
