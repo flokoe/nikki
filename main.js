@@ -1,7 +1,7 @@
 const db = new Dexie('NikkiDB')
 db.version(1).stores({
   tracks: '&timestamp',
-  sessions: '&startTime'
+  sessionsTable: '&startTime'
 })
 
 Reef.debug(true)
@@ -88,8 +88,24 @@ var statistics = new Reef('#statistics', {
 })
 
 var sessions = new Reef('#sessions', {
-  template: function () {
-    return `sessions!`
+  data: {
+    sessionArray: null
+  },
+  template: function (props) {
+    console.log('in session template')
+    const divs = props.sessionArray.map((single_session) => {
+      return `
+      <div class="sessionCard">
+        <div>
+          <div class="sessionDistance">${single_session.distance}</div>
+          <div class="sessionDuration">${single_session.duration}</div>
+        </div>
+        <div class="sessionDate">${new Date(single_session.startTime).toLocaleDateString()}</div>
+      </div>
+      `
+    }).join('')
+
+    return divs
   }
 })
 
@@ -106,7 +122,7 @@ var btnBox = new Reef('#btnBox', {
   },
   template: function (props) {
     if (props.view == 'counter') {
-      return `<span id="counter" onclick="expandBtnBox()">${props.counterContent}</span>`
+      return `<span id="counter" onclick="expandBtnBox(this)">${props.counterContent}</span>`
     } else {
       return `<div id="${props.view}"></div>`
     }
@@ -182,7 +198,10 @@ window.addEventListener('routeUpdated', function (e) {
       main.attach(statistics)
       break
     case 'sessions':
-      main.attach(sessions)
+      db.sessionsTable.toArray().then((array) => {
+        sessions.data.sessionArray = array
+        main.attach(sessions)
+      })
       break
     case 'settings':
       main.attach(settings)
@@ -251,13 +270,13 @@ function submitSession() {
     waypoints: Reef.clone(store.data.waypoints)
   }
 
-  const session = {
+  const cur_session = {
     startTime: Reef.clone(store.data.startTime.getTime()),
     endTime: Reef.clone(store.data.endTime.getTime())
   }
 
   db.tracks.add(track)
-  db.sessions.add(session)
+  db.sessionsTable.add(cur_session)
 
   btnBox.detach(finalScreen)
   btnBoxEl.classList.remove('countdown')
@@ -295,8 +314,8 @@ function startSession() {
 }
 
 // Event listeners
-function expandBtnBox() {
-  btnBoxEl.classList.add('statsExpand')
+function expandBtnBox(elem) {
+  elem.parentElement.classList.add('statsExpand')
 
   if (btnBox.data.counterContent != 'Start') {
     count = 0
