@@ -1,3 +1,10 @@
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
+
 html,
 body {
     height: 100%;
@@ -11,9 +18,14 @@ body {
   position: fixed;
   width: 100%;
   bottom: 0;
-  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.48);
+  -webkit-box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.48);
+          box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.48);
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  justify-content: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   z-index: 99;
   background: #fff;
 }
@@ -22,6 +34,8 @@ body {
   margin: 0;
   padding: 0;
   list-style: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
 }
 
@@ -31,23 +45,38 @@ body {
 }
 
 #activity{
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   height: 100%;
-  flex-direction: column;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
 }
 
 #settings-icon {
   position: absolute;
-    top: 0;
-    padding: 1rem;
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
+  top: 0;
+  padding: 1rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
 }
 
 #conn {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   position: relative;
   top: -7rem;
@@ -65,11 +94,21 @@ body {
     width: 8em;
     height: 8em;
     border-radius: 50%;
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-transition: width .3s, height .3s, border-radius .5s, background .2s;
+    -o-transition: width .3s, height .3s, border-radius .5s, background .2s;
     transition: width .3s, height .3s, border-radius .5s, background .2s;
-    transition-timing-function: ease-in;
+    -webkit-transition-timing-function: ease-in;
+         -o-transition-timing-function: ease-in;
+            transition-timing-function: ease-in;
     color: #fff;
     z-index: 999;
 }
@@ -86,15 +125,22 @@ body {
 }
 
 #sessionStats {
+  display: -ms-grid;
   display: grid;
+  -ms-grid-columns: 1fr 4rem 1fr;
   grid-template-columns: 1fr 1fr;
   grid-column-gap: 4rem;
   grid-row-gap: 2rem;
 }
 
 #sessionStats div {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  flex-direction: column;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
 }
 
 .statVal {
@@ -127,7 +173,12 @@ body {
 
 .sessionCard {
   padding: 0.7rem 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  justify-content: space-around;
-  align-items: flex-end;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
 }
