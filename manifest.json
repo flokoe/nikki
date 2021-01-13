@@ -1,0 +1,55 @@
+{
+  "categories": [
+    "fitness",
+    "health",
+    "lifestyle",
+    "sports"
+  ],
+  "dir": "ltr",
+  "lang": "en-US",
+  "name": "Nikki",
+  "short_name": "Nikki",
+  "scope": "/",
+  "display": "standalone",
+  "start_url": "https://nikki-pwa.web.app/",
+  "background_color": "#3587f3",
+  "theme_color": "#3587f3",
+  "description": "A sport diary to track your progress (focus on running).",
+  "orientation": "portrait",
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "url": "https://nikki-pwa.web.app",
+  "screenshots": [
+    {
+      "src": "screenshots/desktop.png",
+      "sizes": "2048x1724",
+      "type": "image/png"
+    },
+    {
+      "src": "screenshots/smartphone.png",
+      "sizes": "1439x2881",
+      "type": "image/png"
+    }
+  ],
+  "icons": [
+    {
+      "src": "icons/manifest-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/manifest-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Home",
+      "url": "/",
+      "description": "Home page"
+    }
+  ]
+}
